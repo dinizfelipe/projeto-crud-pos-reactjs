@@ -20,7 +20,8 @@ export default (props) => {
     });
   }
 
-  function handleRemove() {
+  function handleRemove(id) {
+    console.log('Lista de TODOs', todos)
     MySwal.fire({
       title: "Você tem certeza?",
       text: "Uma vez deletado, você não poderá recuperar este TODO.",
@@ -31,7 +32,12 @@ export default (props) => {
       cancelButtonText: "Não",
     }).then((isConfirmed) => {
       if (isConfirmed.value) {
-        // axios.delete(`${url}/${id}`).then((res) => {});
+        axios.delete(`${url}/${id}`).then((res) => {
+          const lista = todos.filter((todo) => {
+            return todo._id !== id
+          })
+          setTodos(lista)
+        });
       }
     });
   }
@@ -43,8 +49,13 @@ export default (props) => {
         <td>{moment(todo.createdAt).format("DD/MM/YYYY")}</td>
         <td>{todo.done ? "Sim" : "Não"}</td>
         <td>
-          <Button variant="danger" onClick={handleRemove}>
+          <Button variant="danger" onClick={() => handleRemove(todo._id)}>
             Remover
+          </Button>
+          <Button variant="outline-success" onClick={() => {
+            props.history.push(`/edit/${todo._id}`);
+          }}>
+            Editar
           </Button>
         </td>
       </tr>
